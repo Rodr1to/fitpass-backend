@@ -23,6 +23,11 @@ class User extends Authenticatable
         'password',
     ];
 
+    public function company()
+{
+    return $this->belongsTo(\App\Models\Company::class);
+}
+
     /**
      * The attributes that should be hidden for serialization.
      *

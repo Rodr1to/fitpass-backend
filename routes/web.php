@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\MembershipPlanController; // import the controller
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CompanyController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -28,6 +29,7 @@ Route::middleware(['auth', 'admin'])
         });
 
         Route::resource('plans', MembershipPlanController::class);
+        Route::resource('companies', CompanyController::class);
 });
 
 require __DIR__.'/auth.php';
