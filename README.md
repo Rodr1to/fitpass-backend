@@ -176,7 +176,7 @@ GET /api/v1/partners: Get a paginated list of all approved partners. Can be filt
 
 ---
 
-### Default user credentials
+## Default user credentials
 
 | role        | email                  | password |
 |-------------|------------------------|----------|
