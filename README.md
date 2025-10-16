@@ -150,7 +150,7 @@ GET /register: Registration Page
 GET /dashboard: Main dashboard after login.
 ```
 
-### Admin Panel
+### * Admin Panel
 The admin panel is protected and can only be accessed by users with the hr_admin or super_admin role.
 
 
@@ -165,7 +165,7 @@ GET /admin/companies: View all companies.
 GET /admin/companies/create: Show form to add a new company.
 ```
 
-### API Routes (JSON for frontend)
+### * API Routes (JSON for frontend)
 
 Public API (Version 1.0):
 ```bash
