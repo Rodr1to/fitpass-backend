@@ -33,7 +33,7 @@ This project is configured for a **native macOS development environment** using 
 
 Follow these steps to get the project running on a new macOS machine.
 
-### 1. Install Core Dependencies
+## 1. Install Core Dependencies
 If you don't have them already, install Homebrew, PHP, Composer, and MySQL via the terminal.
 
 ```bash
@@ -48,7 +48,7 @@ brew services start mysql
 
 ```
 
-### 2. Clone & prepare the project
+## 2. Clone & prepare the project
 Clone this repository and configure your local environment.
 
 ```bash
@@ -69,7 +69,7 @@ npm install
 touch .env
 ```
 
-# Now, open the new .env file and paste the contents from the template provided in this README.
+### Now, open the new .env file and paste the contents from the template provided in this README.
 
 ```bash
 APP_NAME="FitPass HOPn API"
@@ -101,12 +101,12 @@ SANCTUM_STATEFUL_DOMAINS=localhost:5173,new-gym-dusky.vercel.app
 
 ```
 
-# Generate a unique application key
+### Generate a unique application key
 ```bash
 php artisan key:generate
 ```
 
-### 3. Database setup
+## 3. Database setup
 Create the database if it doesn't exist
 
 ```bash
@@ -119,7 +119,7 @@ Run the migrations to create all tables and populate them with test data
 php artisan migrate:fresh --seed
 ```
 
-### 4. Serve the Application
+## 4. Serve the Application
 You're all set! To run the application, you need to start both the Vite server and the PHP server in two separate terminal windows, both inside your fitpass-backend directory.
 
 In terminal 1
