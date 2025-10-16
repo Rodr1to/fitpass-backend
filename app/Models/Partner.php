@@ -9,4 +9,7 @@ class Partner extends Model
 {
     /** @use HasFactory<\Database\Factories\PartnerFactory> */
     use HasFactory;
+
+    public function trainers() { return $this->hasMany(Trainer::class); }
+    public function classes() { return $this->hasMany(ClassModel::class); }
 }
