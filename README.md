@@ -6,12 +6,15 @@ This project is part of a larger system that will eventually include a Next.js f
 
 ## Project Status
 
-**Sprint 1: Complete.**
-* Core Laravel project setup.
-* User authentication system with three roles (`employee`, `hr_admin`, `super_admin`).
-* Full CRUD (Create, Read, Update, Delete) functionality for Membership Plans.
-* Admin panel for managing plans, protected by role-based middleware.
-* Database seeders for default plans and users.
+**Stage 1 (Standalone backend environment & architecture setup): Complete.**
+**Stage 2 (Database design & schema implementation): Complete.**
+* **Environment:** Full local development environment setup for macOS.
+* **Authentication:** Robust user authentication and role-based access control (`employee`, `hr_admin`, `super_admin`).
+* **Admin Panel:**
+    * Full CRUD (Create, Read, Update, Delete) for **Membership Plans**.
+    * Full CRUD for **Companies**.
+* **Database:** Complete schema for `users`, `companies`, `membership_plans`, `partners`, `trainers`, `classes`, and `bookings` is migrated.
+* **Testing:** Database seeders for default users, plans, and partners are in place.
 
 ---
 
@@ -19,7 +22,7 @@ This project is part of a larger system that will eventually include a Next.js f
 
 This project is configured for a **native macOS development environment** using Homebrew.
 
-* **PHP Version:** 8.1+
+* **PHP Version:** 8.2+
 * **Database:** MySQL
 * **Package Manager:** Composer
 * **Framework:** Laravel 11
@@ -31,10 +34,10 @@ This project is configured for a **native macOS development environment** using 
 Follow these steps to get the project running on a new macOS machine.
 
 ### 1. Install Core Dependencies
-If you don't have them already, install Homebrew, PHP, Composer, and MySQL.
+If you don't have them already, install Homebrew, PHP, Composer, and MySQL via the terminal.
 
 ```bash
-# Install Homebrew (if you don't have it)
+# Install Homebrew (macOS Package Manager)
 /bin/bash -c "$(curl -fsSL [https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh](https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh))"
 
 # Install PHP, Composer, and MySQL
@@ -45,57 +48,84 @@ brew services start mysql
 
 ```
 
-### 2. Install Core Dependencies
+### 2. Clone & prepare the project
 Clone this repository and configure your local environment.
 
 ```bash
 # Clone the repository from GitHub
-git clone [https://github.com/Rodr1to/fitpass-hopn-laravel.git](https://github.com/Rodr1to/fitpass-hopn-laravel.git)
+git clone [https://github.com/Rodr1to/fitpass-backend.git](https://github.com/Rodr1to/fitpass-backend.git)
 
 # Navigate into the project directory
-cd fitpass-hopn-laravel
+cd fitpass-backend
 
 # Install all the required PHP packages
 composer install
 
-# Copy the example environment file
-cp .env.example .env
+# Install all JavaScript dependencies (for Vite, used for the admin panel)
+npm install
 
-# Generate a unique application key
-php artisan key:generate
-```
+# Copy the environment file template
+# IMPORTANT: This project does not commit a .env.example file. You must create it.
+touch .env
 
-### 3. Database setup
-You need to create the database and update your .env file to connect to it.
-
-First, open the .env file in your code editor and ensure the database credentials are set correctly for a default Homebrew MySQL installation:
-
+# Now, open the new .env file and paste the contents from the template provided in this README.
 ```bash
+
+APP_NAME="FitPass HOPn API"
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=[http://127.0.0.1:8000](http://127.0.0.1:8000)
+APP_KEY=
+
+LOG_CHANNEL=stack
+LOG_LEVEL=debug
+
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_DATABASE=fitpass_hopn
 DB_USERNAME=root
 DB_PASSWORD=
+
+BROADCAST_CONNECTION=log
+CACHE_STORE=file
+FILESYSTEM_DISK=local
+QUEUE_CONNECTION=sync
+SESSION_DRIVER=file
+SESSION_LIFETIME=120
+
+# --- API & Frontend Communication Settings ---
+FRONTEND_URLS=http://localhost:5173,[https://new-gym-dusky.vercel.app](https://new-gym-dusky.vercel.app)
+SANCTUM_STATEFUL_DOMAINS=localhost:5173,new-gym-dusky.vercel.app
+
 ```
 
-Now, create the database and run the migrations with seed data.
+# Generate a unique application key
+```bash
+php artisan key:generate
+```
+
+### 3. Database setup
+Create the database if it doesn't exist
 
 ```bash
-# Log in to the MySQL client
-mysql -u root
+mysql -u root -e "CREATE DATABASE IF NOT EXISTS fitpass_hopn;"
+```
 
-# Inside the MySQL prompt, create the database
-CREATE DATABASE fitpass_hopn;
-exit;
+Run the migrations to create all tables and populate them with test data
 
-# Run the migrations to create all tables and populate them with test data
+```bash
 php artisan migrate:fresh --seed
 ```
 
 ### 4. Serve the Application
-You're all set! Start the local development server.
+You're all set! To run the application, you need to start both the Vite server and the PHP server in two separate terminal windows, both inside your fitpass-backend directory.
 
+In terminal 1
+```bash
+npm run dev
+```
+In terminal 2
 ```bash
 php artisan serve
 ```
@@ -109,35 +139,37 @@ The application will now be available at http://127.0.0.1:8000.
 ### User Authentication
 ### * Login: 
 ```bash
-http://127.0.0.1:8000/login
-```
+GET /login: Login Page
 
-### * Register: 
-```bash
-http://127.0.0.1:8000/register
+GET /register: Registration Page
 ```
 
 ### * Dashboard: 
 ```bash
-http://127.0.0.1:8000/dashboard
+GET /dashboard: Main dashboard after login.
 ```
 
 ### Admin Panel
 The admin panel is protected and can only be accessed by users with the hr_admin or super_admin role.
 
-### * Admin Base URL: 
+
 ```bash
-http://127.0.0.1:8000/admin
+GET /admin/plans: View all membership plans.
+
+GET /admin/plans/create: Show form to add a new plan.
+
+GET /admin/companies: View all companies.
+
+GET /admin/companies/create: Show form to add a new company.
 ```
 
-### * Membership Plan Management: 
-```bash
-http://127.0.0.1:8000/admin/plans
-```
+### API Routes (JSON for frontend)
 
-### * Add New Plan Form: 
+Public API (Version 1.0):
 ```bash
-http://127.0.0.1:8000/admin/plans/create
+GET /api/v1/membership-plans: Get a list of all active membership plans.
+
+GET /api/v1/partners: Get a paginated list of all approved partners. Can be filtered with ?city= and ?type=.
 ```
 
 ---
