@@ -67,10 +67,11 @@ npm install
 # Copy the environment file template
 # IMPORTANT: This project does not commit a .env.example file. You must create it.
 touch .env
+```
 
 # Now, open the new .env file and paste the contents from the template provided in this README.
-```bash
 
+```bash
 APP_NAME="FitPass HOPn API"
 APP_ENV=local
 APP_DEBUG=true
@@ -151,6 +152,7 @@ GET /dashboard: Main dashboard after login.
 
 ### Admin Panel
 The admin panel is protected and can only be accessed by users with the hr_admin or super_admin role.
+
 
 
 ```bash
