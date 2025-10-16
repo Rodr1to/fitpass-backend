@@ -14,4 +14,11 @@ class Company extends Model
     {
         return $this->hasMany(\App\Models\User::class);
     }
+
+    protected $fillable = [
+    'name',
+    'contact_email',
+    'contact_phone',
+    'address',
+];
 }
