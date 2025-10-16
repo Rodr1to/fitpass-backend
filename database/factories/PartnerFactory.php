@@ -3,21 +3,20 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+class PartnerFactory extends Factory {
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Partner>
- */
-class PartnerFactory extends Factory
-{
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition(): array
-    {
+    public function definition(): array {
+
         return [
-            //
+            'name' => $this->faker->company,
+            'type' => $this->faker->randomElement(['gym', 'spa', 'club']),
+            'description' => $this->faker->paragraph,
+            'city' => 'Lima',
+            'address' => $this->faker->streetAddress,
+            'latitude' => -12.0464,
+            'longitude' => -77.0428,
+            'status' => 'approved',
         ];
+        
     }
 }

@@ -18,5 +18,7 @@ class DatabaseSeeder extends Seeder
             MembershipPlanSeeder::class,
             UserSeeder::class,
         ]);
+        
+        \App\Models\Partner::factory(20)->create();
     }
 }
