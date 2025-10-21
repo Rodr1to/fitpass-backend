@@ -14,6 +14,11 @@ class MembershipPlanResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'price' => number_format($this->price, 2), // We format the price to always have 2 decimal places
+            'features' => $this->features,
+        ];
     }
 }
