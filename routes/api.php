@@ -2,20 +2,19 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\V1\MembershipPlanController; // 👈 Add this line
+use App\Http\Controllers\Api\V1\MembershipPlanController;
+use App\Http\Controllers\Api\V1\PartnerController; 
 
 /*
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
 */
 
 // API Version 1 Group
 Route::prefix('v1')->group(function () {
-    Route::get('/membership-plans', [MembershipPlanController::class, 'index']); // 👈 Add this line
+    Route::get('/membership-plans', [MembershipPlanController::class, 'index']);
+    Route::get('/partners', [PartnerController::class, 'index']); // 👈 Add this line
 });
 
 // This default route is for Sanctum authentication.
