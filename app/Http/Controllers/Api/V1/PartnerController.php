@@ -11,23 +11,25 @@ class PartnerController extends Controller
 {
     public function index(Request $request)
     {
-        // Start the query, only getting partners with 'approved' status.
+        // ... (your existing index method is perfect, leave it as is)
         $query = Partner::query()->where('status', 'approved');
-
-        // Check if a 'city' filter was provided in the URL, e.g., ?city=Lima
         if ($request->filled('city')) {
             $query->where('city', $request->city);
         }
-
-        // Check if a 'type' filter was provided, e.g., ?type=gym
         if ($request->filled('type')) {
-            $query->where('type', $request->type);
+            $query->where('type', 'like', '%' . $request->type . '%');
         }
-
-        // Get the results, but paginate them to 15 per page.
         $partners = $query->paginate(15);
-
-        // Pass the data through our API Resource to format it.
         return PartnerResource::collection($partners);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Partner $partner) // 👈 FILL IN THIS METHOD
+    {
+        // Because of route model binding, Laravel automatically gives us the correct Partner.
+        // We just need to pass it through our API Resource to format it.
+        return new PartnerResource($partner);
     }
 }
