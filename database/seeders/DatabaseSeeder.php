@@ -2,6 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
+use App\Models\Partner;
+use App\Models\ClassModel;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -12,13 +15,20 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // delete the example User::factory() code and replace it
-        // with a call to the specific seeders we created.
+        // call existing seeders for plans and users
         $this->call([
             MembershipPlanSeeder::class,
             UserSeeder::class,
         ]);
-        
-        \App\Models\Partner::factory(20)->create();
+
+        // create 20 fake partners
+        $partners = Partner::factory(20)->create();
+
+        // loop through each of those partners and create 5 classes for each one
+        $partners->each(function ($partner) {
+            ClassModel::factory(5)->create([
+                'partner_id' => $partner->id,
+            ]);
+        });
     }
 }
