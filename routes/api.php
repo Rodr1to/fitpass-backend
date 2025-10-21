@@ -22,6 +22,7 @@ Route::prefix('v1')->group(function () {
             return $request->user();
         });
 
-        Route::get('/my-bookings', [BookingController::class, 'index']); // 👈 Add this line
+        Route::get('/my-bookings', [BookingController::class, 'index']);
+        Route::post('/classes/{classModel}/book', [BookingController::class, 'store']);
     });
 });
