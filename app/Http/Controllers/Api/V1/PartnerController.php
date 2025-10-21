@@ -3,47 +3,31 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PartnerResource;
+use App\Models\Partner;
 use Illuminate\Http\Request;
 
 class PartnerController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        //
-    }
+        // Start the query, only getting partners with 'approved' status.
+        $query = Partner::query()->where('status', 'approved');
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        // Check if a 'city' filter was provided in the URL, e.g., ?city=Lima
+        if ($request->filled('city')) {
+            $query->where('city', $request->city);
+        }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+        // Check if a 'type' filter was provided, e.g., ?type=gym
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+        // Get the results, but paginate them to 15 per page.
+        $partners = $query->paginate(15);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        // Pass the data through our API Resource to format it.
+        return PartnerResource::collection($partners);
     }
 }
