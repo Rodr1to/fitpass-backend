@@ -4,8 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo; // Import BelongsTo
-use Illuminate\Database\Eloquent\Relations\HasMany;   // Import HasMany
+use Illuminate\Database\Eloquent\Relations\BelongsTo; 
+use Illuminate\Database\Eloquent\Relations\HasMany;   
 
 class Company extends Model
 {
@@ -21,9 +21,9 @@ class Company extends Model
         'contact_email',
         'contact_phone',
         'address',
-        'code',                 // 👈 Add this
-        'membership_plan_id', // 👈 Add this
-        'status',               // 👈 Add this
+        'code',                 
+        'membership_plan_id', 
+        'status',               
     ];
 
     /**
