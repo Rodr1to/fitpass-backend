@@ -22,6 +22,7 @@ class User extends Authenticatable
         'email',
         'password',
         'company_id',
+        'membership_plan_id',
     ];
 
     public function company()
