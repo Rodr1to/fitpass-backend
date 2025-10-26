@@ -6,7 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Throwable; // Import Throwable for exception handling
+use Illuminate\Support\Facades\Log; // Import Log facade
+use Illuminate\Validation\ValidationException; // Import ValidationException
+use Illuminate\Auth\Access\AuthorizationException; // Import AuthorizationException
+use Throwable; // Import Throwable
 
 class BaseApiController extends Controller
 {
@@ -62,24 +65,26 @@ class BaseApiController extends Controller
     protected function handleException(Throwable $exception, string $message = 'An error occurred.', int $statusCode = 500): JsonResponse
     {
         // Log the detailed exception for debugging
-        \Log::error($exception->getMessage(), [
-            'exception' => $exception,
-            'trace' => $exception->getTraceAsString()
+        Log::error($exception->getMessage(), [
+            'exception' => get_class($exception),
+            'file' => $exception->getFile(),
+            'line' => $exception->getLine(),
+            'trace' => $exception->getTraceAsString() // Include full trace
         ]);
 
         // For validation exceptions, return the specific errors
-        if ($exception instanceof \Illuminate\Validation\ValidationException) {
-            return $this->sendError($exception->getMessage(), $exception->errors(), 422);
+        if ($exception instanceof ValidationException) {
+            return $this->sendError($exception->getMessage(), $exception->errors(), 422); // 422 Unprocessable Entity
         }
 
         // For authorization exceptions
-         if ($exception instanceof \Illuminate\Auth\Access\AuthorizationException) {
-            return $this->sendError($exception->getMessage() ?: 'Forbidden.', [], 403);
+         if ($exception instanceof AuthorizationException) {
+            return $this->sendError($exception->getMessage() ?: 'Forbidden.', [], 403); // 403 Forbidden
         }
 
         // For general errors in production, return a generic message
         if (app()->isProduction()) {
-             return $this->sendError('Server Error.', [], $statusCode);
+             return $this->sendError('An internal server error occurred.', [], $statusCode);
         }
 
         // In development, return more details
@@ -88,6 +93,8 @@ class BaseApiController extends Controller
             'message' => $exception->getMessage(),
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),
+            // Optionally include trace in dev, but can be very large
+            // 'trace' => explode("\n", $exception->getTraceAsString()),
         ], $statusCode);
     }
 }

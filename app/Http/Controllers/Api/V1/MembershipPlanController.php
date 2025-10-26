@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1;
+namespace App\Http\Controllers\Api\V1; 
 
 use App\Http\Resources\MembershipPlanResource;
 use App\Models\MembershipPlan;
 use Illuminate\Http\Request;
-use Throwable; // Import Throwable
+use Throwable; 
 
-// Extend BaseApiController
 class MembershipPlanController extends BaseApiController
 {
     public function index()
