@@ -2,22 +2,23 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Controllers\Controller;
 use App\Http\Resources\MembershipPlanResource;
 use App\Models\MembershipPlan;
 use Illuminate\Http\Request;
+use Throwable; // Import Throwable
 
-class MembershipPlanController extends Controller
+// Extend BaseApiController
+class MembershipPlanController extends BaseApiController
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        // 1. Get only the 'active' plans from the database.
-        $plans = MembershipPlan::where('status', 'active')->get();
-
-        // 2. Pass the data through our API Resource to format it as JSON.
-        return MembershipPlanResource::collection($plans);
+        try {
+            $plans = MembershipPlan::where('status', 'active')->get();
+            // Use sendSuccess
+            return $this->sendSuccess(MembershipPlanResource::collection($plans), 'Membership plans retrieved successfully.');
+        } catch (Throwable $e) {
+            // Use handleException for errors
+            return $this->handleException($e, 'Failed to retrieve membership plans.');
+        }
     }
 }
