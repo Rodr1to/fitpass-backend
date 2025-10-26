@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\MembershipPlanController;
 use App\Http\Controllers\Api\V1\PartnerController;
 use App\Http\Controllers\Api\V1\BookingController; 
 use App\Http\Controllers\Api\V1\CompanyEmployeeController;
+use App\Http\Controllers\Api\V1\CompanyInvoiceController;
 
 
 /*
@@ -53,6 +54,7 @@ Route::prefix('v1')->group(function () {
              * DELETE /api/v1/company/users/{user} -> destroy()
              */
             Route::apiResource('users', CompanyEmployeeController::class);
+            Route::get('invoice/download', [CompanyInvoiceController::class, 'download']);
 
         }); // End of Company Admin group
     });

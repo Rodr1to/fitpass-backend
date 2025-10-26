@@ -6,11 +6,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens; // 
+
+
+use App\Models\Company;
+use App\Models\MembershipPlan;
+use App\Models\Booking;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable; // 
 
     /**
      * The attributes that are mass assignable.
@@ -23,12 +29,24 @@ class User extends Authenticatable
         'password',
         'company_id',
         'membership_plan_id',
+        'role', 
     ];
 
+    /**
+     * Get the company that the user belongs to.
+     */
     public function company()
-{
-    return $this->belongsTo(\App\Models\Company::class);
-}
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+    /**
+     * Get the membership plan associated with the user.
+     */
+    public function membershipPlan()
+    {
+        return $this->belongsTo(MembershipPlan::class);
+    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -40,14 +58,20 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    public function bookings() { return $this->hasMany(Booking::class); }
+    /**
+     * Get the bookings for the user.
+     */
+    public function bookings() 
+    { 
+        return $this->hasMany(Booking::class); 
+    }
 
     /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
      */
-    protected function casts(): array
+    protected function casts(): array 
     {
         return [
             'email_verified_at' => 'datetime',
