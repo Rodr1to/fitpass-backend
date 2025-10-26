@@ -5,8 +5,19 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\MembershipPlanController;
 use App\Http\Controllers\Api\V1\PartnerController;
 use App\Http\Controllers\Api\V1\BookingController; 
+use App\Http\Controllers\Api\V1\CompanyEmployeeController;
 
-/* ... */
+
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "api" middleware group. Make something great!
+|
+*/
 
 // API Version 1 Group
 Route::prefix('v1')->group(function () {
@@ -24,5 +35,25 @@ Route::prefix('v1')->group(function () {
 
         Route::get('/my-bookings', [BookingController::class, 'index']);
         Route::post('/classes/{classModel}/book', [BookingController::class, 'store']);
+
+        // We protect it with auth:sanctum AND our new 'role' middleware.
+        // We will create the 'role:company_admin' middleware in the next steps.
+        Route::middleware(['role:company_admin'])
+             ->prefix('company') // All routes will be /api/v1/company/...
+             ->group(function () {
+            
+            /*
+             * 4. This single line creates all the RESTful routes for managing users
+             * within the Company Admin's own company.
+             *
+             * GET    /api/v1/company/users        -> index()
+             * POST   /api/v1/company/users        -> store()
+             * GET    /api/v1/company/users/{user} -> show()
+             * PUT    /api/v1/company/users/{user} -> update()
+             * DELETE /api/v1/company/users/{user} -> destroy()
+             */
+            Route::apiResource('users', CompanyEmployeeController::class);
+
+        }); // End of Company Admin group
     });
 });
