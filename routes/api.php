@@ -38,8 +38,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/classes/{classModel}/book', [BookingController::class, 'store']);
 
         // We protect it with auth:sanctum AND our new 'role' middleware.
-        // We will create the 'role:company_admin' middleware in the next steps.
-        Route::middleware(['role:company_admin'])
+        Route::middleware(['role:hr_admin'])
              ->prefix('company') // All routes will be /api/v1/company/...
              ->group(function () {
             
@@ -57,5 +56,15 @@ Route::prefix('v1')->group(function () {
             Route::get('invoice/download', [CompanyInvoiceController::class, 'download']);
 
         }); // End of Company Admin group
+
+
+        // --- Super Admin Routes ---
+        Route::middleware(['role:super_admin'])
+             ->prefix('admin') 
+             ->group(function () {
+            
+            Route::apiResource('membership-plans', MembershipPlanController::class)->except(['index']);
+
+        }); // End of Super Admin group
     });
 });
