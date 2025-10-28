@@ -32,6 +32,15 @@ class User extends Authenticatable
         'role', 
     ];
 
+
+    /** 
+     * Get the check-ins for the user.
+     */
+    public function checkins()
+    {
+        return $this->hasMany(Checkin::class);
+    }
+
     /**
      * Get the company that the user belongs to.
      */

@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\PartnerController;
 use App\Http\Controllers\Api\V1\BookingController; 
 use App\Http\Controllers\Api\V1\CompanyEmployeeController;
 use App\Http\Controllers\Api\V1\CompanyInvoiceController;
+use App\Http\Controllers\Api\V1\CheckinController;
 
 
 /*
@@ -31,8 +32,12 @@ Route::prefix('v1')->group(function () {
             return $request->user();
         });
 
+        // Booking Routes
         Route::get('/my-bookings', [BookingController::class, 'index']);
         Route::post('/classes/{classModel}/book', [BookingController::class, 'store']);
+
+        // Checkin Routes
+        Route::post('/checkin', [CheckinController::class, 'store']);
 
         // --- Company Admin Routes ---
         Route::middleware(['role:hr_admin'])
