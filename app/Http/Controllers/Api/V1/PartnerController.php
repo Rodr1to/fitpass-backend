@@ -94,7 +94,7 @@ class PartnerController extends BaseApiController
             // 1. Authorize this action (checks PartnerPolicy for 'create')
             $this->authorize('create', Partner::class);
 
-            // 2. Validate the data (using fields from your partners table migration)
+            // 2. Validate the data (including phone_number)
             $validator = Validator::make($request->all(), [
                 'name' => ['required', 'string', 'max:255', 'unique:partners'],
                 'address' => ['required', 'string', 'max:255'],
@@ -104,8 +104,8 @@ class PartnerController extends BaseApiController
                 'status' => ['required', 'string', Rule::in(['pending', 'approved', 'rejected'])], 
                 'latitude' => ['nullable', 'numeric', 'between:-90,90'],
                 'longitude' => ['nullable', 'numeric', 'between:-180,180'],
-                'phone_number' => ['nullable', 'string', 'max:20'],
-                // Add validation for 'cover_image_url' if needed
+                'phone_number' => ['nullable', 'string', 'max:20'], // Correctly included
+                'cover_image_url' => ['nullable', 'string', 'url', 'max:255'], // Added basic URL validation
             ]);
 
             if ($validator->fails()) {
@@ -134,7 +134,7 @@ class PartnerController extends BaseApiController
             // 1. Authorize this action
             $this->authorize('update', $partner);
 
-            // 2. Validate the data
+            // 2. Validate the data (including phone_number)
             $validator = Validator::make($request->all(), [
                 'name' => ['sometimes', 'required', 'string', 'max:255', Rule::unique('partners')->ignore($partner->id)],
                 'address' => ['sometimes', 'required', 'string', 'max:255'],
@@ -144,7 +144,8 @@ class PartnerController extends BaseApiController
                 'status' => ['sometimes', 'required', 'string', Rule::in(['pending', 'approved', 'rejected'])],
                 'latitude' => ['sometimes', 'nullable', 'numeric', 'between:-90,90'],
                 'longitude' => ['sometimes', 'nullable', 'numeric', 'between:-180,180'],
-                'phone_number' => ['sometimes', 'nullable', 'string', 'max:20'],
+                'phone_number' => ['sometimes', 'nullable', 'string', 'max:20'], // Correctly included
+                'cover_image_url' => ['sometimes', 'nullable', 'string', 'url', 'max:255'], // Added basic URL validation
             ]);
             
             if ($validator->fails()) {
@@ -172,7 +173,7 @@ class PartnerController extends BaseApiController
             // 1. Authorize this action
             $this->authorize('delete', $partner);
 
-            // 2. Delete the partner (Consider adding SoftDeletes to Partner model if needed)
+            // 2. Delete the partner (Uses SoftDeletes if enabled in model)
             $partner->delete();
 
             // 3. Return a 204 No Content response

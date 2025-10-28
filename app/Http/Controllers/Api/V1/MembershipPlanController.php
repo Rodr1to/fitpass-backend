@@ -6,7 +6,6 @@ use App\Http\Resources\MembershipPlanResource;
 use App\Models\MembershipPlan;
 use Illuminate\Http\Request;
 use Throwable; 
-// --- ADD THESE ---
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -39,13 +38,14 @@ class MembershipPlanController extends BaseApiController
             // 1. Authorize this action (checks policy for 'create')
             $this->authorize('create', MembershipPlan::class);
 
-            // 2. Validate the data
+            // 2. Validate the data --- CORRECTED VALIDATION ---
             $validator = Validator::make($request->all(), [
-                'name' => ['required', 'string', 'max:255', 'unique:membership_plans'],
+                'name' => ['required', 'string', 'max:255', 'unique:membership_plans'], // Correct table name
                 'price' => ['required', 'numeric', 'min:0'],
                 'features' => ['nullable', 'string'],
                 'status' => ['required', 'string', Rule::in(['active', 'inactive'])],
             ]);
+            // --- END OF CORRECTION ---
 
             if ($validator->fails()) {
                 // Use a 422 for validation errors
@@ -91,7 +91,7 @@ class MembershipPlanController extends BaseApiController
             // 1. Authorize this action
             $this->authorize('update', $membershipPlan);
 
-            // 2. Validate the data
+            // 2. Validate the data (This section was already correct)
             $validator = Validator::make($request->all(), [
                 'name' => ['sometimes', 'required', 'string', 'max:255', Rule::unique('membership_plans')->ignore($membershipPlan->id)],
                 'price' => ['sometimes', 'required', 'numeric', 'min:0'],
