@@ -14,14 +14,11 @@ use App\Http\Controllers\Api\V1\CompanyInvoiceController;
 | API Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
 */
 
 // API Version 1 Group
 Route::prefix('v1')->group(function () {
+
     // --- Public Routes ---
     Route::get('/membership-plans', [MembershipPlanController::class, 'index']);
     Route::get('/partners', [PartnerController::class, 'index']);
@@ -37,13 +34,13 @@ Route::prefix('v1')->group(function () {
         Route::get('/my-bookings', [BookingController::class, 'index']);
         Route::post('/classes/{classModel}/book', [BookingController::class, 'store']);
 
-        // We protect it with auth:sanctum AND our new 'role' middleware.
+        // --- Company Admin Routes ---
         Route::middleware(['role:hr_admin'])
              ->prefix('company') // All routes will be /api/v1/company/...
              ->group(function () {
             
             /*
-             * 4. This single line creates all the RESTful routes for managing users
+             * This single line creates all the RESTful routes for managing users
              * within the Company Admin's own company.
              *
              * GET    /api/v1/company/users        -> index()
@@ -65,6 +62,22 @@ Route::prefix('v1')->group(function () {
             
             Route::apiResource('membership-plans', MembershipPlanController::class)->except(['index']);
 
+            // --- ADD PARTNER ADMIN ROUTES ---
+            /*
+             * This creates:
+             * POST   /api/v1/admin/partners        -> store()
+             * PUT    /api/v1/admin/partners/{partner} -> update()
+             * DELETE /api/v1/admin/partners/{partner} -> destroy()
+             *
+             * We exclude 'index' and 'show' as they are public.
+             * The GET /admin/partners/{partner} route is optional, could be added if admins need a specific view.
+             */
+            Route::apiResource('partners', PartnerController::class)->except(['index', 'show']);
+
+            // Optional: Route for Approve/Reject (could also be part of update)
+            // Route::patch('partners/{partner}/status', [PartnerController::class, 'updateStatus']);
+
+
         }); // End of Super Admin group
-    });
+    }); // End of auth:sanctum group
 });
