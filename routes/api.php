@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\BookingController;
 use App\Http\Controllers\Api\V1\CompanyEmployeeController;
 use App\Http\Controllers\Api\V1\CompanyInvoiceController;
 use App\Http\Controllers\Api\V1\CheckinController;
+use App\Http\Controllers\Api\V1\AuthController;
 
 
 /*
@@ -25,12 +26,16 @@ Route::prefix('v1')->group(function () {
     Route::get('/partners', [PartnerController::class, 'index']);
     Route::get('/partners/{partner}', [PartnerController::class, 'show']);
     Route::get('/partners/{partner}/classes', [PartnerController::class, 'classes']);
+    Route::post('/login', [AuthController::class, 'login']);
 
     // --- Authenticated Routes ---
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/user', function (Request $request) {
             return $request->user();
         });
+
+        // Logout Route
+        Route::post('/logout', [AuthController::class, 'logout']);
 
         // Booking Routes
         Route::get('/my-bookings', [BookingController::class, 'index']);
