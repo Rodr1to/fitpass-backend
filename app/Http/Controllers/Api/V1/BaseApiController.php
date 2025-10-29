@@ -6,15 +6,47 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Log; // Import Log facade
-use Illuminate\Validation\ValidationException; // Import ValidationException
-use Illuminate\Auth\Access\AuthorizationException; // Import AuthorizationException
-use Throwable; // Import Throwable
+use Illuminate\Support\Facades\Log; 
+use Illuminate\Validation\ValidationException; 
+use Illuminate\Auth\Access\AuthorizationException; 
+use Throwable; 
+use OpenApi\Annotations as OA;
+
+
+/** 
+ * @OA\Info(
+ * version="1.0.0",
+ * title="FitPass HOPn API Documentation",
+ * description="API Documentation for the FitPass HOPn Platform",
+ * @OA\Contact(
+ * email="your-email@example.com"
+ * )
+ * )
+ *
+ * @OA\Server(
+ * url=L5_SWAGGER_CONST_HOST,
+ * description="Main API Server"
+ * )
+ *
+ * @OA\SecurityScheme(
+ * securityScheme="bearerAuth",
+ * type="http",
+ * scheme="bearer",
+ * bearerFormat="JWT",
+ * description="Enter token in format (Bearer <token>)"
+ * )
+ */
+
 
 class BaseApiController extends Controller
 {
     /**
-     * Send a successful JSON response, handling pagination automatically.
+     * Send a successful JSON response.
+     *
+     * @param  mixed  $data
+     * @param  string $message
+     * @param  int  $statusCode
+     * @return \Illuminate\Http\JsonResponse
      */
     protected function sendSuccess(mixed $data, string $message = 'Success', int $statusCode = 200): JsonResponse
     {

@@ -9,14 +9,48 @@ use Throwable;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
-use App\Http\Resources\UserResource; 
+use App\Http\Resources\UserResource;
+use OpenApi\Annotations as OA; 
 
 // Extend BaseApiController
 class AuthController extends BaseApiController
 {
-    /**
-     * Handle an incoming authentication request (API Login).
-     * PUBLIC ROUTE: POST /api/v1/login
+    /** // 
+     * @OA\Post(
+     * path="/api/v1/login",
+     * summary="Authenticate user and return API token",
+     * tags={"Authentication"},
+     * @OA\RequestBody(
+     * required=true,
+     * description="User credentials",
+     * @OA\JsonContent(
+     * required={"email","password","device_name"},
+     * @OA\Property(property="email", type="string", format="email", example="hr@fitpass.com"),
+     * @OA\Property(property="password", type="string", format="password", example="password"),
+     * @OA\Property(property="device_name", type="string", example="Chrome Browser", description="Identifier for the client device/application")
+     * )
+     * ),
+     * @OA\Response(
+     * response=200,
+     * description="Login successful",
+     * @OA\JsonContent(
+     * @OA\Property(property="success", type="boolean", example=true),
+     * @OA\Property(property="message", type="string", example="Login successful."),
+     * @OA\Property(property="data", type="object",
+     * @OA\Property(property="token", type="string", example="1|Abcdefghijklmnopqrstuvwxyz123456"),
+     * @OA\Property(property="user", ref="#/components/schemas/UserResource")
+     * )
+     * )
+     * ),
+     * @OA\Response(
+     * response=422,
+     * description="Validation error or invalid credentials"
+     * ),
+     * @OA\Response(
+     * response=500,
+     * description="Server error"
+     * )
+     * )
      */
     public function login(Request $request)
     {
@@ -53,7 +87,7 @@ class AuthController extends BaseApiController
             // 6. Return the token and user info (using UserResource for consistency)
             return $this->sendSuccess([
                 'token' => $token,
-                'user' => new $user // Use API Resource
+                'user' => new UserResource($user) // Use API Resource
             ], 'Login successful.');
 
         } catch (ValidationException $e) {
@@ -64,9 +98,26 @@ class AuthController extends BaseApiController
         }
     }
 
-    /**
-     * Log the user out (Invalidate the token).
-     * AUTHENTICATED ROUTE: POST /api/v1/logout
+    /** // 
+     * @OA\Post(
+     * path="/api/v1/logout",
+     * summary="Logout user (invalidate current token)",
+     * tags={"Authentication"},
+     * security={{"bearerAuth":{}}},
+     * @OA\Response(
+     * response=200,
+     * description="Successfully logged out",
+     * @OA\JsonContent(
+     * @OA\Property(property="success", type="boolean", example=true),
+     * @OA\Property(property="message", type="string", example="Successfully logged out."),
+     * @OA\Property(property="data", type="object", nullable=true, example=null)
+     * )
+     * ),
+     * @OA\Response(
+     * response=401,
+     * description="Unauthenticated"
+     * )
+     * )
      */
     public function logout(Request $request)
     {
