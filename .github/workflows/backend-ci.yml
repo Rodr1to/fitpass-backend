@@ -1,0 +1,37 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+    paths:
+      - 'apps/backend/**'
+      - '.github/workflows/backend-ci.yml'
+  pull_request:
+    branches: [ "main", "develop" ]
+    paths:
+      - 'apps/backend/**'
+      - '.github/workflows/backend-ci.yml'
+
+jobs:
+  laravel-tests:
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./apps/backend
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    # --- ADD THIS TEMPORARY DEBUGGING STEP ---
+    - name: List Files in Workspace
+      run: ls -R
+      working-directory: ./ # Run this at the root to see everything
+    # -----------------------------------------
+
+    - name: Get Composer Cache Directory
+      id: composer-cache
+      run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+    
+    # ... (rest of the file is the same)
