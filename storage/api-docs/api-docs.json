@@ -1,0 +1,1477 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "FitPass HOPn API Documentation",
+        "description": "API Documentation for the FitPass HOPn Platform",
+        "contact": {
+            "email": "your-email@example.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000",
+            "description": "Main API Server"
+        },
+        {
+            "url": "/api/v1"
+        }
+    ],
+    "paths": {
+        "/api/v1/admin/stats/platform-overview": {
+            "get": {
+                "tags": [
+                    "Super Admin - Analytics"
+                ],
+                "summary": "Get a high-level overview of the entire platform",
+                "operationId": "f37165ef59a6f69d2a1d94afbb847ca4",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/stats/company-activity": {
+            "get": {
+                "tags": [
+                    "Super Admin - Analytics"
+                ],
+                "summary": "Get a summary of activity for each company",
+                "operationId": "d6faa06c675626e6565a092e72408b2d",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/stats/partner-performance": {
+            "get": {
+                "tags": [
+                    "Super Admin - Analytics"
+                ],
+                "summary": "Get performance stats for all partners",
+                "operationId": "fc8e85707516ce73d6dddf4f55174d74",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Authenticate user and return API token",
+                "description": "//",
+                "operationId": "bae68d1c55329ecb6e41f48285840c8f",
+                "requestBody": {
+                    "description": "User credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password",
+                                    "device_name"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "hr@fitpass.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password"
+                                    },
+                                    "device_name": {
+                                        "description": "Identifier for the client device/application",
+                                        "type": "string",
+                                        "example": "Chrome Browser"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Login successful."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "token": {
+                                                    "type": "string",
+                                                    "example": "1|Abcdefghijklmnopqrstuvwxyz123456"
+                                                },
+                                                "user": {
+                                                    "$ref": "#/components/schemas/UserResource"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error or invalid credentials"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/api/v1/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Logout user (invalidate current token)",
+                "description": "//",
+                "operationId": "c5cdd87fdbf9d0f95dede875bd023dec",
+                "responses": {
+                    "200": {
+                        "description": "Successfully logged out",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Successfully logged out."
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": null,
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/my-bookings": {
+            "get": {
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "Get a list of the authenticated user's bookings",
+                "operationId": "be0a09d3e68c850f53805c5c24a87123",
+                "responses": {
+                    "200": {
+                        "description": "A list of the user's bookings.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/BookingResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/classes/{classId}/book": {
+            "post": {
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "Book the authenticated user into a specific class",
+                "operationId": "b1e125663579d851c32488238d894214",
+                "parameters": [
+                    {
+                        "name": "classId",
+                        "in": "path",
+                        "description": "The ID of the class to book",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Booking created successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/BookingResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Class not found"
+                    },
+                    "409": {
+                        "description": "Class is full or already booked"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/checkin": {
+            "post": {
+                "tags": [
+                    "Check-in"
+                ],
+                "summary": "Record a check-in for the authenticated user at a partner location",
+                "operationId": "bac97cac299b1cc8ef8cd95cf5ff35de",
+                "requestBody": {
+                    "description": "The ID of the partner to check into.",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "partner_id"
+                                ],
+                                "properties": {
+                                    "partner_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Check-in recorded successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/CheckinResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden (e.g., partner is not approved)"
+                    },
+                    "422": {
+                        "description": "Validation error (e.g., partner_id is missing or invalid)"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/company/stats/usage-summary": {
+            "get": {
+                "tags": [
+                    "Company Admin - Analytics"
+                ],
+                "summary": "Get usage summary for the admin's company",
+                "operationId": "8381bbc806cc1fa4530d55ffac2f1902",
+                "parameters": [
+                    {
+                        "name": "start_date",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2025-10-01"
+                        }
+                    },
+                    {
+                        "name": "end_date",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2025-10-31"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/company/stats/checkins-by-partner": {
+            "get": {
+                "tags": [
+                    "Company Admin - Analytics"
+                ],
+                "summary": "Get check-in counts per partner for the admin's company",
+                "operationId": "6aac93530187651163f28e043f0a93aa",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/company/users": {
+            "get": {
+                "tags": [
+                    "Company Admin - Employees"
+                ],
+                "summary": "Get a list of employees for the admin's company",
+                "operationId": "6211cd7e387523daf261cdaf2b941aa5",
+                "responses": {
+                    "200": {
+                        "description": "A paginated list of employees.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/UserResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "description": "Pagination links",
+                                            "type": "object"
+                                        },
+                                        "meta": {
+                                            "description": "Pagination metadata",
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Company Admin - Employees"
+                ],
+                "summary": "Create a new employee within the admin's company",
+                "operationId": "21b2dcae70bcd7f79c99aca2a4154988",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john.doe@company.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    },
+                                    "role": {
+                                        "description": "Role within the company. Defaults to 'employee'.",
+                                        "type": "string",
+                                        "enum": [
+                                            "employee",
+                                            "hr_admin"
+                                        ],
+                                        "example": "employee"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Employee created successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/company/users/{id}": {
+            "get": {
+                "tags": [
+                    "Company Admin - Employees"
+                ],
+                "summary": "Get details of a single employee within the admin's company",
+                "operationId": "ea5f251d9d79f6b0a99e4f1c09832ac9",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Employee details.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResource"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Employee not found or not in company"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Company Admin - Employees"
+                ],
+                "summary": "Update an existing employee's details",
+                "operationId": "747db00f4696557f361dcd8e745efc6c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Johnathan Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john.doe.new@company.com"
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "enum": [
+                                            "employee",
+                                            "hr_admin"
+                                        ]
+                                    },
+                                    "membership_plan_id": {
+                                        "type": "integer",
+                                        "example": 2,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Employee updated successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResource"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Employee not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Company Admin - Employees"
+                ],
+                "summary": "Delete an employee from the company",
+                "operationId": "024233707f037ff389da2a83950ae524",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Employee deleted successfully"
+                    },
+                    "404": {
+                        "description": "Employee not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/company/invoice/download": {
+            "get": {
+                "tags": [
+                    "Company Admin - Invoicing"
+                ],
+                "summary": "Generates and downloads a PDF invoice for the admin's company",
+                "operationId": "3a1a3a90c4e4bd27658c06097565bb15",
+                "responses": {
+                    "200": {
+                        "description": "PDF invoice file.",
+                        "content": {
+                            "application/pdf": {}
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/membership-plans": {
+            "get": {
+                "tags": [
+                    "Membership Plans"
+                ],
+                "summary": "Get a public list of all active membership plans",
+                "operationId": "e4180f0bd19d98846ff9fad85a8484f0",
+                "responses": {
+                    "200": {
+                        "description": "List of active plans"
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/membership-plans": {
+            "post": {
+                "tags": [
+                    "Super Admin - Plans"
+                ],
+                "summary": "Create a new membership plan",
+                "operationId": "63c650a3403988c9e8a47cf6c5dbde66",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "price",
+                                    "status"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Platinum Plan"
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 99.99
+                                    },
+                                    "features": {
+                                        "type": "string",
+                                        "example": "All gyms, All spas, Personal trainer"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "active",
+                                            "inactive"
+                                        ],
+                                        "example": "active"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Plan created successfully"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/membership-plans/{id}": {
+            "get": {
+                "tags": [
+                    "Super Admin - Plans"
+                ],
+                "summary": "Get details of a single plan (admin only)",
+                "operationId": "1e6bdcf13c6aec783ba9c768ce65d84b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Plan details"
+                    },
+                    "404": {
+                        "description": "Plan not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Super Admin - Plans"
+                ],
+                "summary": "Update an existing membership plan",
+                "operationId": "aa71dc131ae8c774ad40c733d403b32d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "format": "float"
+                                    },
+                                    "features": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "active",
+                                            "inactive"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Plan updated successfully"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Super Admin - Plans"
+                ],
+                "summary": "Delete a membership plan",
+                "operationId": "45cb1c725a22768afd0b45d3c42731ab",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Plan deleted successfully"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/partners": {
+            "get": {
+                "tags": [
+                    "Partners"
+                ],
+                "summary": "Get a public list of approved partners",
+                "operationId": "2a56c17491763bc4f6cda27614536748",
+                "parameters": [
+                    {
+                        "name": "city",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "Lima"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "gym",
+                                "spa",
+                                "club"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of approved partners"
+                    }
+                }
+            }
+        },
+        "/api/v1/partners/{id}": {
+            "get": {
+                "tags": [
+                    "Partners"
+                ],
+                "summary": "Get details for a single partner",
+                "operationId": "a586c51c0a3a96d6c17f2bd2ce777d3d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Partner details"
+                    },
+                    "404": {
+                        "description": "Partner not found"
+                    }
+                }
+            }
+        },
+        "/api/v1/partners/{id}/classes": {
+            "get": {
+                "tags": [
+                    "Partners"
+                ],
+                "summary": "Get a list of all classes offered by a single partner",
+                "operationId": "f78667bfa50bbdf99f74d55f79e1cbf6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of classes"
+                    },
+                    "404": {
+                        "description": "Partner not found"
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/partners": {
+            "post": {
+                "tags": [
+                    "Super Admin - Partners"
+                ],
+                "summary": "Create a new partner",
+                "operationId": "1ec9f97f47a526e3b88f24f3b9f04c2b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "type",
+                                    "city",
+                                    "address",
+                                    "latitude",
+                                    "longitude",
+                                    "contact_email"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "FitZone Gym"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "gym",
+                                            "spa",
+                                            "club"
+                                        ]
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "city": {
+                                        "type": "string",
+                                        "example": "Lima"
+                                    },
+                                    "address": {
+                                        "type": "string"
+                                    },
+                                    "latitude": {
+                                        "type": "number",
+                                        "format": "float"
+                                    },
+                                    "longitude": {
+                                        "type": "number",
+                                        "format": "float"
+                                    },
+                                    "contact_email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Partner created successfully"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/partners/{id}": {
+            "put": {
+                "tags": [
+                    "Super Admin - Partners"
+                ],
+                "summary": "Update an existing partner",
+                "operationId": "b8b0b8a0168569aaf69717c4a146f483",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "pending",
+                                            "approved",
+                                            "rejected"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Partner updated successfully"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Super Admin - Partners"
+                ],
+                "summary": "Delete a partner",
+                "operationId": "d9492272cd14f36787ebd83646da0b8e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Partner deleted successfully"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "BookingResource": {
+                "title": "Booking Resource",
+                "description": "Represents a user's booking for a class.",
+                "properties": {
+                    "booking_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "confirmed",
+                            "cancelled"
+                        ],
+                        "example": "confirmed"
+                    },
+                    "booked_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-10-30T14:30:00.000000Z"
+                    },
+                    "class": {
+                        "$ref": "#/components/schemas/ClassModelResource"
+                    },
+                    "partner": {
+                        "$ref": "#/components/schemas/PartnerResource"
+                    }
+                },
+                "type": "object"
+            },
+            "CheckinResource": {
+                "title": "Check-in Resource",
+                "description": "Represents a single user check-in event.",
+                "properties": {
+                    "checkin_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "checkin_time": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-10-30T15:00:00.000000Z"
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/UserResource"
+                    },
+                    "partner": {
+                        "$ref": "#/components/schemas/PartnerResource"
+                    }
+                },
+                "type": "object"
+            },
+            "ClassModelResource": {
+                "title": "Class Model Resource",
+                "description": "Represents a single class or session.",
+                "properties": {
+                    "class_id": {
+                        "type": "integer",
+                        "example": 101
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Morning Yoga"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "A refreshing yoga session to start your day."
+                    },
+                    "start_time": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-11-05T09:00:00.000000Z"
+                    },
+                    "end_time": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-11-05T10:00:00.000000Z"
+                    },
+                    "capacity": {
+                        "type": "integer",
+                        "example": 20
+                    }
+                },
+                "type": "object"
+            },
+            "MembershipPlanResource": {
+                "title": "Membership Plan Resource",
+                "description": "Represents a single membership plan available for users.",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Gold Plan"
+                    },
+                    "price": {
+                        "description": "The price formatted to two decimal places.",
+                        "type": "string",
+                        "example": "49.99"
+                    },
+                    "features": {
+                        "type": "string",
+                        "example": "Access to all gyms, spa included, 1 personal trainer session per month."
+                    }
+                },
+                "type": "object"
+            },
+            "PartnerResource": {
+                "title": "Partner Resource",
+                "description": "Represents a partner gym, spa, or club.",
+                "properties": {
+                    "partner_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Global Fitness"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "gym",
+                            "spa",
+                            "club"
+                        ],
+                        "example": "gym"
+                    },
+                    "city": {
+                        "type": "string",
+                        "example": "Lima"
+                    },
+                    "address": {
+                        "type": "string",
+                        "example": "Av. Larco 123"
+                    },
+                    "location": {
+                        "properties": {
+                            "latitude": {
+                                "type": "number",
+                                "format": "float",
+                                "example": -12.1218
+                            },
+                            "longitude": {
+                                "type": "number",
+                                "format": "float",
+                                "example": -77.0311
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "pending",
+                            "approved",
+                            "rejected"
+                        ],
+                        "example": "approved"
+                    }
+                },
+                "type": "object"
+            },
+            "UserResource": {
+                "title": "User Resource",
+                "description": "User model representation",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "HR Admin"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "hr@fitpass.com"
+                    },
+                    "role": {
+                        "type": "string",
+                        "enum": [
+                            "employee",
+                            "hr_admin",
+                            "super_admin"
+                        ],
+                        "example": "hr_admin"
+                    },
+                    "email_verified_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "null",
+                        "nullable": true
+                    },
+                    "company_id": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "membership_plan_id": {
+                        "type": "integer",
+                        "example": 3,
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-10-26T11:04:40.000000Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-10-26T11:04:40.000000Z"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "Enter token in format: Bearer <token>",
+                "name": "Authorization",
+                "in": "header",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Bookings",
+            "description": "Endpoints for managing user bookings"
+        },
+        {
+            "name": "Check-in",
+            "description": "Endpoints for user check-ins at partner locations"
+        },
+        {
+            "name": "Company Admin - Employees",
+            "description": "Endpoints for HR Admins to manage employees within their company"
+        },
+        {
+            "name": "Company Admin - Invoicing",
+            "description": "Endpoints for company invoice management"
+        },
+        {
+            "name": "Membership Plans",
+            "description": "Endpoints for viewing and managing membership plans"
+        },
+        {
+            "name": "Partners",
+            "description": "Endpoints for viewing and managing partners (gyms, spas, etc.)"
+        },
+        {
+            "name": "Super Admin - Analytics",
+            "description": "Super Admin - Analytics"
+        },
+        {
+            "name": "Authentication",
+            "description": "Authentication"
+        },
+        {
+            "name": "Company Admin - Analytics",
+            "description": "Company Admin - Analytics"
+        },
+        {
+            "name": "Super Admin - Plans",
+            "description": "Super Admin - Plans"
+        },
+        {
+            "name": "Super Admin - Partners",
+            "description": "Super Admin - Partners"
+        }
+    ]
+}

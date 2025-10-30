@@ -15,23 +15,60 @@ on:
 jobs:
   laravel-tests:
     runs-on: ubuntu-latest
-    
-    defaults:
-      run:
-        working-directory: ./apps/backend
 
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    # --- ADD THIS TEMPORARY DEBUGGING STEP ---
+    # This is the debugging step to see the file structure
     - name: List Files in Workspace
       run: ls -R
-      working-directory: ./ # Run this at the root to see everything
-    # -----------------------------------------
-
-    - name: Get Composer Cache Directory
-      id: composer-cache
-      run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+      
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.4'
+        extensions: mbstring, xml, sqlite, pdo_sqlite, bcmath, gd, zip, dom
+        coverage: none
     
-    # ... (rest of the file is the same)
+    # All subsequent steps must run inside the backend directory
+    - name: Set working directory for subsequent steps
+      run: echo "WORKING_DIR=./apps/backend" >> $GITHUB_ENV
+
+    - name: Cache Composer Dependencies
+      uses: actions/cache@v4
+      with:
+        path: ${{ env.WORKING_DIR }}/vendor
+        key: ${{ runner.os }}-composer-${{ hashFiles(format('{0}/composer.lock', env.WORKING_DIR)) }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
+
+    - name: Copy .env file for Testing
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      working-directory: ${{ env.WORKING_DIR }}
+
+    - name: Install Composer Dependencies
+      run: composer install --no-progress --prefer-dist --optimize-autoloader
+      working-directory: ${{ env.WORKING_DIR }}
+
+    - name: Generate Application Key
+      run: php artisan key:generate
+      working-directory: ${{ env.WORKING_DIR }}
+
+    - name: Create SQLite Database
+      run: touch database/database.sqlite
+      working-directory: ${{ env.WORKING_DIR }}
+
+    - name: Run Migrations for Testing
+      env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: database/database.sqlite
+      run: php artisan migrate --seed
+      working-directory: ${{ env.WORKING_DIR }}
+
+    - name: Execute Tests (PHPUnit)
+      env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: database/database.sqlite
+      run: php artisan test
+      working-directory: ${{ env.WORKING_DIR }}
