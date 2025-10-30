@@ -6,14 +6,14 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Log; 
-use Illuminate\Validation\ValidationException; 
-use Illuminate\Auth\Access\AuthorizationException; 
-use Throwable; 
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\Access\AuthorizationException;
+use Throwable;
 use OpenApi\Annotations as OA;
 
 
-/** 
+/**
  * @OA\Info(
  * version="1.0.0",
  * title="FitPass HOPn API Documentation",
@@ -36,42 +36,40 @@ use OpenApi\Annotations as OA;
  * description="Enter token in format (Bearer <token>)"
  * )
  */
-
-
 class BaseApiController extends Controller
 {
     /**
-     * Send a successful JSON response.
-     *
-     * @param  mixed  $data
-     * @param  string $message
-     * @param  int  $statusCode
-     * @return \Illuminate\Http\JsonResponse
+     * Send a successful JSON response with a guaranteed consistent structure.
      */
     protected function sendSuccess(mixed $data, string $message = 'Success', int $statusCode = 200): JsonResponse
     {
-        $response = [
+        // Case 1: The data is a paginated resource collection.
+        // This is the most complex case, and we handle it explicitly.
+        if ($data instanceof \Illuminate\Http\Resources\Json\ResourceCollection && $data->resource instanceof LengthAwarePaginator) {
+            
+            // We extract the paginated data and merge it into our consistent response structure.
+            $paginatedData = $data->response()->getData(true);
+
+            $responsePayload = [
+                'success' => true,
+                'message' => $message,
+                'data'    => $paginatedData['data'],
+                'links'   => $paginatedData['links'],
+                'meta'    => $paginatedData['meta'],
+            ];
+
+            return response()->json($responsePayload, $statusCode);
+        }
+
+        // Case 2: For ALL other data types (single items, regular arrays, null),
+        // we manually wrap them in a "data" key to ensure consistency. This is the fix.
+        $responsePayload = [
             'success' => true,
             'message' => $message,
+            'data'    => $data,
         ];
 
-        // If data is already a Resource Collection (often from pagination)
-        if ($data instanceof JsonResource && $data->resource instanceof LengthAwarePaginator) {
-            return $data->additional($response)->response()->setStatusCode($statusCode);
-        }
-        // If data is a direct Paginator instance
-        if ($data instanceof LengthAwarePaginator) {
-             // Wrap in anonymous resource collection to add meta/links
-            return JsonResource::collection($data)->additional($response)->response()->setStatusCode($statusCode);
-        }
-         // If data is a single Resource
-        if ($data instanceof JsonResource) {
-            return $data->additional($response)->response()->setStatusCode($statusCode);
-        }
-
-        // For simple arrays or objects
-        $response['data'] = $data;
-        return response()->json($response, $statusCode);
+        return response()->json($responsePayload, $statusCode);
     }
 
     /**
@@ -96,37 +94,30 @@ class BaseApiController extends Controller
      */
     protected function handleException(Throwable $exception, string $message = 'An error occurred.', int $statusCode = 500): JsonResponse
     {
-        // Log the detailed exception for debugging
         Log::error($exception->getMessage(), [
             'exception' => get_class($exception),
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),
-            'trace' => $exception->getTraceAsString() // Include full trace
+            'trace' => $exception->getTraceAsString()
         ]);
 
-        // For validation exceptions, return the specific errors
         if ($exception instanceof ValidationException) {
-            return $this->sendError($exception->getMessage(), $exception->errors(), 422); // 422 Unprocessable Entity
+            return $this->sendError($exception->getMessage(), $exception->errors(), 422);
         }
 
-        // For authorization exceptions
-         if ($exception instanceof AuthorizationException) {
-            return $this->sendError($exception->getMessage() ?: 'Forbidden.', [], 403); // 403 Forbidden
+        if ($exception instanceof AuthorizationException) {
+            return $this->sendError($exception->getMessage() ?: 'Forbidden.', [], 403);
         }
 
-        // For general errors in production, return a generic message
         if (app()->isProduction()) {
-             return $this->sendError('An internal server error occurred.', [], $statusCode);
+            return $this->sendError('An internal server error occurred.', [], $statusCode);
         }
 
-        // In development, return more details
         return $this->sendError($message, [
             'exception' => get_class($exception),
             'message' => $exception->getMessage(),
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),
-            // Optionally include trace in dev, but can be very large
-            // 'trace' => explode("\n", $exception->getTraceAsString()),
         ], $statusCode);
     }
 }

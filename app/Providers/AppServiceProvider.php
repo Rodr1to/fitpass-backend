@@ -2,9 +2,10 @@
 
 namespace App\Providers;
 
-use App\Models\Company; 
-use App\Observers\CompanyObserver; 
+use App\Models\Company;
+use App\Observers\CompanyObserver;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Http\Resources\Json\JsonResource; 
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -13,7 +14,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // No changes needed here for observers
+        // No changes needed here
     }
 
     /**
@@ -21,7 +22,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Tell Laravel to use CompanyObserver whenever Company events occur
+        // This line registers your existing observer. We will keep it.
         Company::observe(CompanyObserver::class);
+
+        // This tells Laravel to always wrap single JSON Resource responses in a 'data' key,
+        // which fixes the inconsistency and makes the API predictable.
+        JsonResource::wrap('data');
     }
 }
