@@ -15,6 +15,81 @@
         }
     ],
     "paths": {
+        "/api/v1/admin/stats/platform-overview": {
+            "get": {
+                "tags": [
+                    "Super Admin - Analytics"
+                ],
+                "summary": "Get a high-level overview of the entire platform",
+                "operationId": "f37165ef59a6f69d2a1d94afbb847ca4",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/stats/company-activity": {
+            "get": {
+                "tags": [
+                    "Super Admin - Analytics"
+                ],
+                "summary": "Get a summary of activity for each company",
+                "operationId": "d6faa06c675626e6565a092e72408b2d",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/stats/partner-performance": {
+            "get": {
+                "tags": [
+                    "Super Admin - Analytics"
+                ],
+                "summary": "Get performance stats for all partners",
+                "operationId": "fc8e85707516ce73d6dddf4f55174d74",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/v1/login": {
             "post": {
                 "tags": [
@@ -142,6 +217,78 @@
                     }
                 ]
             }
+        },
+        "/api/v1/company/stats/usage-summary": {
+            "get": {
+                "tags": [
+                    "Company Admin - Analytics"
+                ],
+                "summary": "Get usage summary for the admin's company",
+                "operationId": "8381bbc806cc1fa4530d55ffac2f1902",
+                "parameters": [
+                    {
+                        "name": "start_date",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2025-10-01"
+                        }
+                    },
+                    {
+                        "name": "end_date",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2025-10-31"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/company/stats/checkins-by-partner": {
+            "get": {
+                "tags": [
+                    "Company Admin - Analytics"
+                ],
+                "summary": "Get check-in counts per partner for the admin's company",
+                "operationId": "6aac93530187651163f28e043f0a93aa",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -213,8 +360,16 @@
     },
     "tags": [
         {
+            "name": "Super Admin - Analytics",
+            "description": "Super Admin - Analytics"
+        },
+        {
             "name": "Authentication",
             "description": "Authentication"
+        },
+        {
+            "name": "Company Admin - Analytics",
+            "description": "Company Admin - Analytics"
         }
     ]
 }

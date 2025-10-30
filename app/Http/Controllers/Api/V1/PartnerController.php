@@ -9,13 +9,25 @@ use Illuminate\Http\Request;
 use Throwable; 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use OpenApi\Annotations as OA;
 
-// Extend BaseApiController
+/**
+ * @OA\Tag(
+ * name="Partners",
+ * description="Endpoints for viewing and managing partners (gyms, spas, etc.)"
+ * )
+ */
 class PartnerController extends BaseApiController
 {
     /**
-     * Display a listing of the resource.
-     * PUBLIC ROUTE: GET /api/v1/partners
+     * @OA\Get(
+     * path="/api/v1/partners",
+     * summary="Get a public list of approved partners",
+     * tags={"Partners"},
+     * @OA\Parameter(name="city", in="query", required=false, @OA\Schema(type="string", example="Lima")),
+     * @OA\Parameter(name="type", in="query", required=false, @OA\Schema(type="string", enum={"gym", "spa", "club"})),
+     * @OA\Response(response=200, description="List of approved partners")
+     * )
      */
     public function index(Request $request)
     {
@@ -43,8 +55,14 @@ class PartnerController extends BaseApiController
     }
 
     /**
-     * Display the specified resource.
-     * PUBLIC ROUTE: GET /api/v1/partners/{partner}
+     * @OA\Get(
+     * path="/api/v1/partners/{id}",
+     * summary="Get details for a single partner",
+     * tags={"Partners"},
+     * @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     * @OA\Response(response=200, description="Partner details"),
+     * @OA\Response(response=404, description="Partner not found")
+     * )
      */
     public function show(Partner $partner)
     {
@@ -57,8 +75,14 @@ class PartnerController extends BaseApiController
     }
 
     /**
-     * Display classes for a specific partner.
-     * PUBLIC ROUTE: GET /api/v1/partners/{partner}/classes
+     * @OA\Get(
+     * path="/api/v1/partners/{id}/classes",
+     * summary="Get a list of all classes offered by a single partner",
+     * tags={"Partners"},
+     * @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     * @OA\Response(response=200, description="List of classes"),
+     * @OA\Response(response=404, description="Partner not found")
+     * )
      */
      public function classes(Partner $partner)
      {
@@ -85,8 +109,27 @@ class PartnerController extends BaseApiController
     // --- NEW ADMIN METHODS START HERE ---
 
     /**
-     * Store a newly created resource in storage.
-     * ADMIN ROUTE: POST /api/v1/admin/partners
+     * @OA\Post(
+     * path="/api/v1/admin/partners",
+     * summary="Create a new partner",
+     * tags={"Super Admin - Partners"},
+     * security={{"bearerAuth":{}}},
+     * @OA\RequestBody(
+     * required=true,
+     * @OA\JsonContent(
+     * required={"name", "type", "city", "address", "latitude", "longitude", "contact_email"},
+     * @OA\Property(property="name", type="string", example="FitZone Gym"),
+     * @OA\Property(property="type", type="string", enum={"gym", "spa", "club"}),
+     * @OA\Property(property="description", type="string", nullable=true),
+     * @OA\Property(property="city", type="string", example="Lima"),
+     * @OA\Property(property="address", type="string"),
+     * @OA\Property(property="latitude", type="number", format="float"),
+     * @OA\Property(property="longitude", type="number", format="float"),
+     * @OA\Property(property="contact_email", type="string", format="email")
+     * )
+     * ),
+     * @OA\Response(response=201, description="Partner created successfully")
+     * )
      */
     public function store(Request $request)
     {
@@ -125,8 +168,21 @@ class PartnerController extends BaseApiController
 
 
     /**
-     * Update the specified resource in storage.
-     * ADMIN ROUTE: PUT /api/v1/admin/partners/{partner}
+     * @OA\Put(
+     * path="/api/v1/admin/partners/{id}",
+     * summary="Update an existing partner",
+     * tags={"Super Admin - Partners"},
+     * security={{"bearerAuth":{}}},
+     * @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     * @OA\RequestBody(
+     * required=true,
+     * @OA\JsonContent(
+     * @OA\Property(property="name", type="string"),
+     * @OA\Property(property="status", type="string", enum={"pending", "approved", "rejected"})
+     * )
+     * ),
+     * @OA\Response(response=200, description="Partner updated successfully")
+     * )
      */
     public function update(Request $request, Partner $partner)
     {
@@ -164,8 +220,14 @@ class PartnerController extends BaseApiController
     }
 
     /**
-     * Remove the specified resource from storage.
-     * ADMIN ROUTE: DELETE /api/v1/admin/partners/{partner}
+     * @OA\Delete(
+     * path="/api/v1/admin/partners/{id}",
+     * summary="Delete a partner",
+     * tags={"Super Admin - Partners"},
+     * security={{"bearerAuth":{}}},
+     * @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     * @OA\Response(response=204, description="Partner deleted successfully")
+     * )
      */
     public function destroy(Partner $partner)
     {

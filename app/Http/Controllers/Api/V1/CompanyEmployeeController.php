@@ -9,14 +9,38 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules;
+use OpenApi\Annotations as OA;
 
+
+/**
+ * @OA\Tag(
+ * name="Company Admin - Employees",
+ * description="Endpoints for HR Admins to manage employees within their company"
+ * )
+ */
 class CompanyEmployeeController extends Controller
 {
     /**
-     * Display a listing of the company's employees.
-     *
-     * This method is called by the:
-     * GET /api/v1/company/users route
+     * @OA\Get(
+     * path="/api/v1/company/users",
+     * summary="Get a list of employees for the admin's company",
+     * tags={"Company Admin - Employees"},
+     * security={{"bearerAuth":{}}},
+     * @OA\Response(
+     * response=200,
+     * description="A paginated list of employees.",
+     * @OA\JsonContent(
+     * type="object",
+     * @OA\Property(property="success", type="boolean", example=true),
+     * @OA\Property(property="message", type="string"),
+     * @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/UserResource")),
+     * @OA\Property(property="links", type="object", description="Pagination links"),
+     * @OA\Property(property="meta", type="object", description="Pagination metadata")
+     * )
+     * ),
+     * @OA\Response(response=401, description="Unauthenticated"),
+     * @OA\Response(response=403, description="Forbidden")
+     * )
      */
     public function index()
     {
@@ -38,10 +62,25 @@ class CompanyEmployeeController extends Controller
     }
 
     /**
-     * Store a newly created employee in storage.
-     *
-     * This method is called by the:
-     * POST /api/v1/company/users route
+     * @OA\Post(
+     * path="/api/v1/company/users",
+     * summary="Create a new employee within the admin's company",
+     * tags={"Company Admin - Employees"},
+     * security={{"bearerAuth":{}}},
+     * @OA\RequestBody(
+     * required=true,
+     * @OA\JsonContent(
+     * required={"name", "email", "password", "password_confirmation"},
+     * @OA\Property(property="name", type="string", example="John Doe"),
+     * @OA\Property(property="email", type="string", format="email", example="john.doe@company.com"),
+     * @OA\Property(property="password", type="string", format="password", example="password123"),
+     * @OA\Property(property="password_confirmation", type="string", format="password", example="password123"),
+     * @OA\Property(property="role", type="string", enum={"employee", "hr_admin"}, example="employee", description="Role within the company. Defaults to 'employee'.")
+     * )
+     * ),
+     * @OA\Response(response=201, description="Employee created successfully.", @OA\JsonContent(ref="#/components/schemas/UserResource")),
+     * @OA\Response(response=422, description="Validation error")
+     * )
      */
     public function store(Request $request)
     {
@@ -77,10 +116,15 @@ class CompanyEmployeeController extends Controller
     }
 
     /**
-     * Display the specified employee.
-     *
-     * This method is called by the:
-     * GET /api/v1/company/users/{user} route
+     * @OA\Get(
+     * path="/api/v1/company/users/{id}",
+     * summary="Get details of a single employee within the admin's company",
+     * tags={"Company Admin - Employees"},
+     * security={{"bearerAuth":{}}},
+     * @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     * @OA\Response(response=200, description="Employee details.", @OA\JsonContent(ref="#/components/schemas/UserResource")),
+     * @OA\Response(response=404, description="Employee not found or not in company")
+     * )
      */
     public function show(User $user)
     {
@@ -94,10 +138,23 @@ class CompanyEmployeeController extends Controller
     }
 
     /**
-     * Update the specified employee in storage.
-     *
-     * This method is called by the:
-     * PUT /api/v1/company/users/{user} route
+     * @OA\Put(
+     * path="/api/v1/company/users/{id}",
+     * summary="Update an existing employee's details",
+     * tags={"Company Admin - Employees"},
+     * security={{"bearerAuth":{}}},
+     * @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     * @OA\RequestBody(
+     * @OA\JsonContent(
+     * @OA\Property(property="name", type="string", example="Johnathan Doe"),
+     * @OA\Property(property="email", type="string", format="email", example="john.doe.new@company.com"),
+     * @OA\Property(property="role", type="string", enum={"employee", "hr_admin"}),
+     * @OA\Property(property="membership_plan_id", type="integer", nullable=true, example=2)
+     * )
+     * ),
+     * @OA\Response(response=200, description="Employee updated successfully.", @OA\JsonContent(ref="#/components/schemas/UserResource")),
+     * @OA\Response(response=404, description="Employee not found")
+     * )
      */
     public function update(Request $request, User $user)
     {
@@ -133,10 +190,15 @@ class CompanyEmployeeController extends Controller
     }
 
     /**
-     * Remove the specified employee from storage..
-     *
-     * This method is called by the:
-     * DELETE /api/v1/company/users/{user} route
+     * @OA\Delete(
+     * path="/api/v1/company/users/{id}",
+     * summary="Delete an employee from the company",
+     * tags={"Company Admin - Employees"},
+     * security={{"bearerAuth":{}}},
+     * @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     * @OA\Response(response=200, description="Employee deleted successfully"),
+     * @OA\Response(response=404, description="Employee not found")
+     * )
      */
     public function destroy(User $user)
     {

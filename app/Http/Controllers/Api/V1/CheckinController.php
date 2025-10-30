@@ -10,13 +10,47 @@ use App\Models\Partner;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Throwable;
+use OpenApi\Annotations as OA;
 
-// Extend BaseApiController
+
+
+
+/**
+ * @OA\Tag(
+ * name="Check-in",
+ * description="Endpoints for user check-ins at partner locations"
+ * )
+ */
 class CheckinController extends BaseApiController
 {
     /**
-     * Store a newly created check-in in storage.
-     * AUTHENTICATED ROUTE: POST /api/v1/checkin
+     * @OA\Post(
+     * path="/api/v1/checkin",
+     * summary="Record a check-in for the authenticated user at a partner location",
+     * tags={"Check-in"},
+     * security={{"bearerAuth":{}}},
+     * @OA\RequestBody(
+     * required=true,
+     * description="The ID of the partner to check into.",
+     * @OA\JsonContent(
+     * required={"partner_id"},
+     * @OA\Property(property="partner_id", type="integer", example=1)
+     * )
+     * ),
+     * @OA\Response(
+     * response=201,
+     * description="Check-in recorded successfully.",
+     * @OA\JsonContent(
+     * type="object",
+     * @OA\Property(property="success", type="boolean", example=true),
+     * @OA\Property(property="message", type="string"),
+     * @OA\Property(property="data", ref="#/components/schemas/CheckinResource")
+     * )
+     * ),
+     * @OA\Response(response=401, description="Unauthenticated"),
+     * @OA\Response(response=403, description="Forbidden (e.g., partner is not approved)"),
+     * @OA\Response(response=422, description="Validation error (e.g., partner_id is missing or invalid)")
+     * )
      */
     public function store(Request $request)
     {

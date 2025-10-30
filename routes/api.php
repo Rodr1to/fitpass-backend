@@ -9,7 +9,8 @@ use App\Http\Controllers\Api\V1\CompanyEmployeeController;
 use App\Http\Controllers\Api\V1\CompanyInvoiceController;
 use App\Http\Controllers\Api\V1\CheckinController;
 use App\Http\Controllers\Api\V1\AuthController;
-
+use App\Http\Controllers\Api\V1\Company\StatsController as CompanyStatsController;
+use App\Http\Controllers\Api\V1\Admin\StatsController as AdminStatsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,6 +63,10 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('users', CompanyEmployeeController::class);
             Route::get('invoice/download', [CompanyInvoiceController::class, 'download']);
 
+            // --- Company Analytics Routes ---
+                Route::get('stats/usage-summary', [CompanyStatsController::class, 'usageSummary']);
+                Route::get('stats/checkins-by-partner', [CompanyStatsController::class, 'checkinsByPartner']);
+
         }); // End of Company Admin group
 
 
@@ -83,6 +88,11 @@ Route::prefix('v1')->group(function () {
              * The GET /admin/partners/{partner} route is optional, could be added if admins need a specific view.
              */
             Route::apiResource('partners', PartnerController::class)->except(['index', 'show']);
+
+           // --- Super Admin Analytics Routes ---
+                Route::get('stats/platform-overview', [AdminStatsController::class, 'platformOverview']);
+                Route::get('stats/company-activity', [AdminStatsController::class, 'companyActivity']);
+                Route::get('stats/partner-performance', [AdminStatsController::class, 'partnerPerformance']); 
 
             // Optional: Route for Approve/Reject (could also be part of update)
             // Route::patch('partners/{partner}/status', [PartnerController::class, 'updateStatus']);

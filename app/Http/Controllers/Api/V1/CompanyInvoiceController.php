@@ -6,16 +6,34 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
-use Barryvdh\DomPDF\Facade\Pdf; // 
-use Carbon\Carbon; // 
+use Barryvdh\DomPDF\Facade\Pdf; 
+use Carbon\Carbon; 
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Tag(
+ * name="Company Admin - Invoicing",
+ * description="Endpoints for company invoice management"
+ * )
+ */
 class CompanyInvoiceController extends Controller
 {
     /**
-     * Generate and download a PDF invoice for the company admin.
-     *
-     * This method is called by the:
-     * GET /api/v1/company/invoice/download route
+     * @OA\Get(
+     * path="/api/v1/company/invoice/download",
+     * summary="Generates and downloads a PDF invoice for the admin's company",
+     * tags={"Company Admin - Invoicing"},
+     * security={{"bearerAuth":{}}},
+     * @OA\Response(
+     * response=200,
+     * description="PDF invoice file.",
+     * @OA\MediaType(
+     * mediaType="application/pdf"
+     * )
+     * ),
+     * @OA\Response(response=401, description="Unauthenticated"),
+     * @OA\Response(response=403, description="Forbidden")
+     * )
      */
     public function download(Request $request)
     {

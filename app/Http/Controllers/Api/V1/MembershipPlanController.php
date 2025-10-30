@@ -8,13 +8,23 @@ use Illuminate\Http\Request;
 use Throwable; 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Tag(
+ * name="Membership Plans",
+ * description="Endpoints for viewing and managing membership plans"
+ * )
+ */
 class MembershipPlanController extends BaseApiController
 {
     /**
-     * Display a listing of the resource.
-     * PUBLIC ROUTE: GET /api/v1/membership-plans
-     * (Your existing, correct method)
+     * @OA\Get(
+     * path="/api/v1/membership-plans",
+     * summary="Get a public list of all active membership plans",
+     * tags={"Membership Plans"},
+     * @OA\Response(response=200, description="List of active plans")
+     * )
      */
     public function index()
     {
@@ -29,8 +39,25 @@ class MembershipPlanController extends BaseApiController
     }
 
     /**
-     * Store a newly created resource in storage.
-     * ADMIN ROUTE: POST /api/v1/admin/membership-plans
+     * @OA\Post(
+     * path="/api/v1/admin/membership-plans",
+     * summary="Create a new membership plan",
+     * tags={"Super Admin - Plans"},
+     * security={{"bearerAuth":{}}},
+     * @OA\RequestBody(
+     * required=true,
+     * @OA\JsonContent(
+     * required={"name", "price", "status"},
+     * @OA\Property(property="name", type="string", example="Platinum Plan"),
+     * @OA\Property(property="price", type="number", format="float", example=99.99),
+     * @OA\Property(property="features", type="string", example="All gyms, All spas, Personal trainer"),
+     * @OA\Property(property="status", type="string", enum={"active", "inactive"}, example="active")
+     * )
+     * ),
+     * @OA\Response(response=201, description="Plan created successfully"),
+     * @OA\Response(response=401, description="Unauthenticated"),
+     * @OA\Response(response=403, description="Forbidden")
+     * )
      */
     public function store(Request $request)
     {
@@ -64,8 +91,15 @@ class MembershipPlanController extends BaseApiController
     }
 
     /**
-     * Display the specified resource.
-     * ADMIN ROUTE: GET /api/v1/admin/membership-plans/{plan}
+     * @OA\Get(
+     * path="/api/v1/admin/membership-plans/{id}",
+     * summary="Get details of a single plan (admin only)",
+     * tags={"Super Admin - Plans"},
+     * security={{"bearerAuth":{}}},
+     * @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     * @OA\Response(response=200, description="Plan details"),
+     * @OA\Response(response=404, description="Plan not found")
+     * )
      */
     public function show(MembershipPlan $membershipPlan)
     {
@@ -82,8 +116,23 @@ class MembershipPlanController extends BaseApiController
     }
 
     /**
-     * Update the specified resource in storage.
-     * ADMIN ROUTE: PUT /api/v1/admin/membership-plans/{plan}
+     * @OA\Put(
+     * path="/api/v1/admin/membership-plans/{id}",
+     * summary="Update an existing membership plan",
+     * tags={"Super Admin - Plans"},
+     * security={{"bearerAuth":{}}},
+     * @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     * @OA\RequestBody(
+     * required=true,
+     * @OA\JsonContent(
+     * @OA\Property(property="name", type="string"),
+     * @OA\Property(property="price", type="number", format="float"),
+     * @OA\Property(property="features", type="string"),
+     * @OA\Property(property="status", type="string", enum={"active", "inactive"})
+     * )
+     * ),
+     * @OA\Response(response=200, description="Plan updated successfully")
+     * )
      */
     public function update(Request $request, MembershipPlan $membershipPlan)
     {
@@ -115,8 +164,14 @@ class MembershipPlanController extends BaseApiController
     }
 
     /**
-     * Remove the specified resource from storage.
-     * ADMIN ROUTE: DELETE /api/v1/admin/membership-plans/{plan}
+     * @OA\Delete(
+     * path="/api/v1/admin/membership-plans/{id}",
+     * summary="Delete a membership plan",
+     * tags={"Super Admin - Plans"},
+     * security={{"bearerAuth":{}}},
+     * @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     * @OA\Response(response=204, description="Plan deleted successfully")
+     * )
      */
     public function destroy(MembershipPlan $membershipPlan)
     {
