@@ -1,34 +1,19 @@
-# .github/workflows/backend-ci.yml
-
 name: Backend CI
 
 on:
-  # Run this workflow on pushes to the main and develop branches
   push:
     branches: [ "main", "develop" ]
-    paths:
-      - 'apps/backend/**'
-      - '.github/workflows/backend-ci.yml'
-  # Also run on pull requests targeting main and develop
   pull_request:
     branches: [ "main", "develop" ]
-    paths:
-      - 'apps/backend/**'
-      - '.github/workflows/backend-ci.yml'
 
 jobs:
   laravel-tests:
     runs-on: ubuntu-latest
-    
-    # Set the working directory for all subsequent steps to 'apps/backend'
-    defaults:
-      run:
-        working-directory: ./apps/backend
 
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
-
+      
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
@@ -37,12 +22,10 @@ jobs:
         coverage: none
 
     - name: Cache Composer Dependencies
-      id: composer-cache
-      run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-    - uses: actions/cache@v4
+      uses: actions/cache@v4
       with:
-        path: ${{ steps.composer-cache.outputs.dir }}
-        key: ${{ runner.os }}-composer-${{ hashFiles('**/apps/backend/composer.lock') }}
+        path: vendor
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
           ${{ runner.os }}-composer-
 
