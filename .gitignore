@@ -26,3 +26,6 @@ yarn-error.log
 # IDE files
 .idea
 .vscode
+
+/bootstrap/cache/*.php
+/storage/logs
