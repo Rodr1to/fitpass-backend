@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-// --- 1. EXTEND YOUR BASEAPICONTROLLER ---
 use App\Http\Controllers\Api\V1\BaseApiController; 
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -20,7 +19,7 @@ use OpenApi\Annotations as OA;
 class CompanyEmployeeController extends BaseApiController // <-- 2. EXTEND THE RIGHT CONTROLLER
 {
     /**
-     * @OA\Get(...)
+     * @OA\Get
      */
     public function index(Request $request)
     {
@@ -44,7 +43,7 @@ class CompanyEmployeeController extends BaseApiController // <-- 2. EXTEND THE R
     }
 
     /**
-     * @OA\Post(...)
+     * @OA\Post
      */
     public function store(Request $request)
     {
@@ -81,7 +80,7 @@ class CompanyEmployeeController extends BaseApiController // <-- 2. EXTEND THE R
     }
 
     /**
-     * @OA\Get(...)
+     * @OA\Get
      */
     public function show(Request $request, User $user)
     {
@@ -94,7 +93,7 @@ class CompanyEmployeeController extends BaseApiController // <-- 2. EXTEND THE R
     }
 
     /**
-     * @OA\Put(...)
+     * @OA\Put
      */
     public function update(Request $request, User $user)
     {
@@ -122,7 +121,7 @@ class CompanyEmployeeController extends BaseApiController // <-- 2. EXTEND THE R
     }
 
     /**
-     * @OA\Delete(...)
+     * @OA\Delete
      */
     public function destroy(User $user)
     {
