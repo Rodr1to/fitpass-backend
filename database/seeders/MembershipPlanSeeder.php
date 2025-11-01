@@ -14,11 +14,11 @@ class MembershipPlanSeeder extends Seeder
     public function run(): void
     {
         $plans = [
-            ['name' => 'Bronze', 'price' => 19.99, 'features' => 'Basic gym access.'],
-            ['name' => 'Silver', 'price' => 39.99, 'features' => 'Gym access + 2 classes.'],
-            ['name' => 'Gold', 'price' => 59.99, 'features' => 'All access + training.'],
-            ['name' => 'Club+', 'price' => 79.99, 'features' => 'All access + sports clubs.'],
-            ['name' => 'Digital', 'price' => 9.99, 'features' => 'Online content only.'],
+            ['name' => 'Bronze', 'price' => 19.99, 'features' => 'Basic gym access.', 'status' => 'active'],
+            ['name' => 'Silver', 'price' => 39.99, 'features' => 'Gym access + 2 classes.', 'status' => 'active'],
+            ['name' => 'Gold', 'price' => 59.99, 'features' => 'All access + training.', 'status' => 'active'],
+            ['name' => 'Club+', 'price' => 79.99, 'features' => 'All access + sports clubs.', 'status' => 'active'],
+            ['name' => 'Digital', 'price' => 9.99, 'features' => 'Online content only.', 'status' => 'active'],
         ];
         
         foreach ($plans as $plan) {

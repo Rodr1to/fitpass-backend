@@ -15,7 +15,7 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        $company = Company::where('name', 'Test Company Inc.')->first();
+        $company = Company::where('contact_email', 'billing@testcompany.com')->first();
 
         // Super Admin
         User::firstOrCreate(
