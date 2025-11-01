@@ -1,1 +1,0 @@
-web: php artisan config:clear && php artisan cache:clear && php artisan route:cache && php artisan view:cache && php artisan l5-swagger:generate && php artisan migrate --force && php -S 0.0.0.0:$PORT -t public
