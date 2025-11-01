@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\MembershipPlan; // Make sure this is imported
 
 class MembershipPlanSeeder extends Seeder
 {
@@ -19,8 +20,10 @@ class MembershipPlanSeeder extends Seeder
             ['name' => 'Club+', 'price' => 79.99, 'features' => 'All access + sports clubs.'],
             ['name' => 'Digital', 'price' => 9.99, 'features' => 'Online content only.'],
         ];
+        
         foreach ($plans as $plan) {
-            \App\Models\MembershipPlan::create($plan);
+            // Use firstOrCreate to prevent duplicate errors
+            MembershipPlan::firstOrCreate(['name' => $plan['name']], $plan);
         }
     }
 }
