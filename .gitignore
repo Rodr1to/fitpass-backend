@@ -28,4 +28,6 @@ yarn-error.log
 .vscode
 
 /bootstrap/cache/*.php
-/storage/logs
+/storage/logsbootstrap/cache/config.php/
+bootstrap/cache/*
+!bootstrap/cache/.gitkeep
