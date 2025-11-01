@@ -29,6 +29,7 @@ This project is configured for a **native macOS development environment** using 
 
 ---
 
+
 ## Local Setup Instructions
 
 Follow these steps to get the project running on a new macOS machine.
