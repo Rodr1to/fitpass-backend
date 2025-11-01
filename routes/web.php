@@ -30,6 +30,10 @@ Route::middleware(['auth', 'admin'])
 
         Route::resource('plans', MembershipPlanController::class);
         Route::resource('companies', CompanyController::class);
+
+
+Route::get('/ping', fn() => 'pong');
+
 });
 
 require __DIR__.'/auth.php';
