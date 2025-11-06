@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Controllers\Controller;
+// 1. Extend BaseApiController
+use App\Http\Controllers\Api\V1\BaseApiController;
 use App\Http\Resources\BookingResource;
 use App\Models\Booking;
 use App\Models\ClassModel;
 use Illuminate\Http\Request;
 use OpenApi\Annotations as OA;
-
+use Throwable; // 2. Import Throwable
 
 /**
  * @OA\Tag(
@@ -16,7 +17,7 @@ use OpenApi\Annotations as OA;
  * description="Endpoints for managing user bookings"
  * )
  */
-class BookingController extends Controller
+class BookingController extends BaseApiController // 3. Extend BaseApiController
 {
     /**
      * @OA\Get(
@@ -30,7 +31,7 @@ class BookingController extends Controller
      * @OA\JsonContent(
      * type="object",
      * @OA\Property(property="success", type="boolean", example=true),
-     * @OA\Property(property="message", type="string"),
+     * @OA\Property(property="message", type="string", example="Bookings retrieved successfully."),
      * @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/BookingResource"))
      * )
      * ),
@@ -39,9 +40,15 @@ class BookingController extends Controller
      */
     public function index(Request $request)
     {
-        $user = $request->user();
-        $bookings = $user->bookings()->with('classModel.partner')->get();
-        return BookingResource::collection($bookings);
+        try { // 4. Add try...catch block
+            $user = $request->user();
+            $bookings = $user->bookings()->with('classModel.partner')->get();
+            
+            // 5. Use sendSuccess for consistent response
+            return $this->sendSuccess(BookingResource::collection($bookings), 'Bookings retrieved successfully.');
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Failed to retrieve bookings.');
+        }
     }
 
     /**
@@ -63,7 +70,7 @@ class BookingController extends Controller
      * @OA\JsonContent(
      * type="object",
      * @OA\Property(property="success", type="boolean", example=true),
-     * @OA\Property(property="message", type="string"),
+     * @OA\Property(property="message", type="string", example="Booking confirmed successfully."),
      * @OA\Property(property="data", ref="#/components/schemas/BookingResource")
      * )
      * ),
@@ -74,20 +81,23 @@ class BookingController extends Controller
      */
     public function store(Request $request, ClassModel $classModel)
     {
-        // Use firstOrCreate to prevent a user from double-booking the same class.
-        $booking = Booking::firstOrCreate(
-            [
-                'user_id' => $request->user()->id,
-                'class_model_id' => $classModel->id,
-            ],
-            [
-                'status' => 'confirmed'
-            ]
-        );
+        try { // 6. Add try...catch block
+            // Use firstOrCreate to prevent a user from double-booking the same class.
+            $booking = Booking::firstOrCreate(
+                [
+                    'user_id' => $request->user()->id,
+                    'class_model_id' => $classModel->id,
+                ],
+                [
+                    'status' => 'confirmed'
+                ]
+            );
 
-        return response()->json([
-            'message' => 'Booking confirmed successfully.',
-            'data' => new BookingResource($booking),
-        ], 201); // 201 Created status code
+            // 7. Use sendSuccess for consistent response
+            return $this->sendSuccess(new BookingResource($booking), 'Booking confirmed successfully.', 201);
+            
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Failed to book class.');
+        }
     }
 }
