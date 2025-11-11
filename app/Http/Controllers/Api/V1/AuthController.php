@@ -11,10 +11,80 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use App\Http\Resources\UserResource;
 use OpenApi\Annotations as OA; 
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rules;
 
 // Extend BaseApiController
 class AuthController extends BaseApiController
 {
+    /**
+     * @OA\Post(
+     * path="/api/v1/register",
+     * summary="Register a new user",
+     * tags={"Authentication"},
+     * @OA\RequestBody(
+     * required=true,
+     * description="User registration details",
+     * @OA\JsonContent(
+     * required={"name", "email", "password", "password_confirmation"},
+     * @OA\Property(property="name", type="string", example="John Doe"),
+     * @OA\Property(property="email", type="string", format="email", example="john.doe@example.com"),
+     * @OA\Property(property="password", type="string", format="password", example="password123"),
+     * @OA\Property(property="password_confirmation", type="string", format="password", example="password123")
+     * )
+     * ),
+     * @OA\Response(
+     * response=201,
+     * description="User registered successfully.",
+     * @OA\JsonContent(
+     * @OA\Property(property="success", type="boolean", example=true),
+     * @OA\Property(property="message", type="string", example="User registered successfully."),
+     * @OA\Property(property="data", type="object",
+     * @OA\Property(property="token", type="string", example="2|Abc...xyz"),
+     * @OA\Property(property="user", ref="#/components/schemas/UserResource")
+     * )
+     * )
+     * ),
+     * @OA\Response(response=422, description="Validation error")
+     * )
+     */
+    public function register(Request $request)
+    {
+        try {
+            // 1. Validate the incoming data
+            $validator = Validator::make($request->all(), [
+                'name' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
+                'password' => ['required', 'confirmed', Rules\Password::defaults()],
+                'device_name' => 'required|string', // Device name is needed to create the token
+            ]);
+
+            if ($validator->fails()) {
+                return $this->sendError('Validation Failed.', $validator->errors()->toArray(), 422);
+            }
+            
+            // 2. Create the new user
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role' => 'employee', // Default role for public registration
+            ]);
+
+            // 3. Create the API token
+            $token = $user->createToken($request->device_name)->plainTextToken;
+
+            // 4. Return the new user and token
+            return $this->sendSuccess([
+                'token' => $token,
+                'user' => new UserResource($user)
+            ], 'User registered successfully.', 201); // 201 = Created
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Registration failed due to a server error.');
+        }
+    }
+
     /** // 
      * @OA\Post(
      * path="/api/v1/login",

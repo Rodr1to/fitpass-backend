@@ -23,6 +23,7 @@ use App\Http\Controllers\Api\V1\Admin\StatsController as AdminStatsController;
 Route::prefix('v1')->group(function () {
 
     // --- Public Routes ---
+    Route::post('/register', [AuthController::class, 'register']);
     Route::get('/membership-plans', [MembershipPlanController::class, 'index']);
     Route::get('/partners', [PartnerController::class, 'index']);
     Route::get('/partners/{partner}', [PartnerController::class, 'show']);
